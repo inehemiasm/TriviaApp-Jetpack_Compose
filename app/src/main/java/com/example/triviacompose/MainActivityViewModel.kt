@@ -32,18 +32,16 @@ class MainActivityViewModel(private val networkClient: ApiRequest): ViewModel() 
     val questionIndex: StateFlow<Int> = _index
 
     private val _listOfQuestions = MutableStateFlow<List<TriviaQuestion>>(mutableListOf())
-    val listOfQuestions: StateFlow<List<TriviaQuestion>> = _listOfQuestions
+    private val listOfQuestions: StateFlow<List<TriviaQuestion>> = _listOfQuestions
 
-    private var _listOfCategories : MutableStateFlow<List<TriviaCategory>> = MutableStateFlow(
-        mutableListOf())
-    var listOfCategories : MutableStateFlow<List<TriviaCategory>> = _listOfCategories
-
+    private var _listOfCategories : MutableStateFlow<List<TriviaCategory>> = MutableStateFlow(mutableListOf())
+    val listOfCategories : MutableStateFlow<List<TriviaCategory>> = _listOfCategories
 
     private lateinit var _currentQuestion : MutableStateFlow<TriviaQuestion>
     lateinit var currentQuestion: MutableStateFlow<TriviaQuestion>
 
-    private lateinit var _currentQuestionText : MutableStateFlow<String>
-    lateinit var currentQuestionText: MutableStateFlow<String>
+    private var _currentQuestionText : MutableStateFlow<String> = MutableStateFlow("")
+    val currentQuestionText: StateFlow<String> = _currentQuestionText
 
 
     private val _answersMap = MutableStateFlow<MutableMap<String, Boolean>>(mutableMapOf())
@@ -87,15 +85,14 @@ class MainActivityViewModel(private val networkClient: ApiRequest): ViewModel() 
     fun setCurrentQuestion(item: TriviaQuestion) {
         _currentQuestion = MutableStateFlow(item)
         currentQuestion = _currentQuestion
-        val questionText = item.question
-        _currentQuestionText = MutableStateFlow(questionText)
-        currentQuestionText = _currentQuestionText
+        _currentQuestionText.value = item.question
+
         val mapOfAnswers = mutableMapOf<String, Boolean>()
         if (_answersPointsMap.value[_index.value] != true) {
-            val answers = currentQuestion.value.incorrect_answers + currentQuestion.value.correct_answer
+            val answers = item.incorrect_answers + item.correct_answer
             answers.shuffled()
             answers.forEach {
-                mapOfAnswers[it] = it == currentQuestion.value.correct_answer
+                mapOfAnswers[it] = it == item.correct_answer
             }
         }
         _answersMap.value = mapOfAnswers
@@ -123,11 +120,7 @@ class MainActivityViewModel(private val networkClient: ApiRequest): ViewModel() 
                 .awaitResponse()
             if (questionsResponse.isSuccessful) {
                 val data = questionsResponse.body()!!
-                _listOfCategories = MutableStateFlow(data.trivia_categories)
-                listOfCategories = _listOfCategories
-                listOfCategories.value.forEach {
-                    Timber.e(it.name)
-                }
+                _listOfCategories.value = data.trivia_categories
             }
         }
     }
