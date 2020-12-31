@@ -13,8 +13,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.WithConstraints
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.platform.AmbientDensity
@@ -36,9 +34,7 @@ import timber.log.Timber
 fun HomeScreen(
     mainActivityViewModel: MainActivityViewModel
 ) {
-
     val state = mainActivityViewModel.state.collectAsState()
-    val currentIndex = mainActivityViewModel.questionIndex.collectAsState()
 
     when (state.value) {
         MainActivityViewModel.State.Idle -> {
@@ -51,7 +47,6 @@ fun HomeScreen(
         }
         is MainActivityViewModel.State.Error -> ErrorView(retryAction = { mainActivityViewModel.getQuestions() })
     }
-
 }
 
 @Composable
@@ -104,14 +99,6 @@ fun onPreviousClicked(viewModel: MainActivityViewModel) {
     }
 }
 
-@ExperimentalCoroutinesApi
-fun onAnswerClicked(
-    viewModel: MainActivityViewModel,
-    answerClicked: String
-) {
-    viewModel.onAnswerSelected(answerClicked)
-}
-
 @ExperimentalLayout
 @ExperimentalCoroutinesApi
 @Composable
@@ -145,6 +132,7 @@ fun CenterLoadingIndicator() {
         )
     }
 }
+
 @ExperimentalLayout
 @Composable
 @ExperimentalCoroutinesApi
@@ -172,7 +160,6 @@ fun ShowAnswersList(
 fun questionCard(
     mainActivityViewModel: MainActivityViewModel
 ) {
-    //val questionText = mainActivityViewModel.listOfQuestions.value[mainActivityViewModel.questionIndex.value].question
     val currentQuestionText = mainActivityViewModel.currentQuestionText.collectAsState()
     Card(shape = RoundedCornerShape(10.dp),
         modifier = Modifier
@@ -201,27 +188,9 @@ fun AnswerListText(
     mainActivityViewModel: MainActivityViewModel
 ) {
     Timber.e("Created Answer $answer")
-    Text(
-        text = answer,
-        modifier = Modifier
-            .background(
-                Brush.verticalGradient(
-                    listOf(Color.Transparent, Color.LightGray, Color.Transparent),
-                    20f,  // TODO: set start
-                    100f  // TODO: set end
-                )
-            ).padding(10.dp)
-            .clickable(onClick = {
-                onAnswerClicked(
-                    mainActivityViewModel,
-                    answer
-                )
-            }),
-        overflow = TextOverflow.Ellipsis,
-        maxLines = 1,
-        style = TextStyle(fontWeight = FontWeight.Bold),
-        fontSize = 24.sp
-    )
+    Column(modifier = Modifier.clickable(onClick = { with(mainActivityViewModel) { onAnswerSelected(answer) } })) {
+        CustomText(answer = answer)
+    }
 }
 
 @Composable
@@ -239,7 +208,6 @@ fun CenteredColumn(string: String) {
             .border(width = 8.dp, color = MaterialTheme.colors.onBackground,
                 shape = RoundedCornerShape(10.dp)),
             contentAlignment = Alignment.Center) {
-            //Text(text = string, modifier = Modifier)
             Text(text = string,
                 Modifier.padding(15.dp),
                 textAlign = TextAlign.Center,
@@ -248,3 +216,21 @@ fun CenteredColumn(string: String) {
     }
 }
 
+@ExperimentalCoroutinesApi
+@Composable
+fun CustomText(answer: String) {
+
+        Text(
+            text = answer,
+            modifier = Modifier
+                .shadow(5.dp)
+                .background(color = MaterialTheme.colors.background,
+                    shape = RoundedCornerShape(5.dp))
+                .padding(10.dp),
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 2,
+            style = TextStyle(fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colors.onBackground),
+            fontSize = 24.sp
+        )
+}

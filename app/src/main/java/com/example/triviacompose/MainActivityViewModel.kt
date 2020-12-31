@@ -4,7 +4,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.triviacompose.api.ApiRequest
-import com.example.triviacompose.api.response.Categories
 import com.example.triviacompose.api.response.TriviaCategory
 import com.example.triviacompose.api.response.TriviaQuestion
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -30,6 +29,8 @@ class MainActivityViewModel(private val networkClient: ApiRequest): ViewModel() 
 
     private val _index = MutableStateFlow(0)
     val questionIndex: StateFlow<Int> = _index
+    private val _currentCategory = MutableStateFlow(18)
+    val currentCategory: StateFlow<Int> = _currentCategory
 
     private val _listOfQuestions = MutableStateFlow<List<TriviaQuestion>>(mutableListOf())
     private val listOfQuestions: StateFlow<List<TriviaQuestion>> = _listOfQuestions
@@ -47,11 +48,11 @@ class MainActivityViewModel(private val networkClient: ApiRequest): ViewModel() 
     private val _answersMap = MutableStateFlow<MutableMap<String, Boolean>>(mutableMapOf())
     val answersMap: StateFlow<MutableMap<String, Boolean>> = _answersMap
 
-    private val _answersColorsMap = MutableStateFlow<MutableMap<String, Color>>(mutableMapOf())
-    val answersColorsMap: StateFlow<MutableMap<String, Color>> = _answersColorsMap
+    private val _answersPointsMap = MutableStateFlow<MutableMap<Int, String>>(mutableMapOf())
+    val answersPointsMap: StateFlow<MutableMap<Int, String>> = _answersPointsMap
 
-    private val _answersPointsMap = MutableStateFlow<MutableMap<Int, Boolean>>(mutableMapOf())
-    val answersPointsMap: StateFlow<MutableMap<Int, Boolean>> = _answersPointsMap
+    private val _answeredQuestionsMap = MutableStateFlow<MutableMap<Int, Boolean>>(mutableMapOf())
+    val answeredQuestionsMap: StateFlow<MutableMap<Int, Boolean>> = _answeredQuestionsMap
 
     private val postsExceptionHandler = CoroutineExceptionHandler { _, throwable ->
         throwable.printStackTrace()
@@ -75,42 +76,55 @@ class MainActivityViewModel(private val networkClient: ApiRequest): ViewModel() 
         setCurrentQuestion(listOfQuestions.value[questionIndex.value])
     }
 
-    fun setColor(answer: String, color: Color) {
-        _answersColorsMap.value[answer] = color
-    }
-
-    fun setAnswers(map: MutableMap<String, Boolean>) {
-        _answersMap.value = map
-    }
-    fun setCurrentQuestion(item: TriviaQuestion) {
+    private fun setCurrentQuestion(item: TriviaQuestion) {
         _currentQuestion = MutableStateFlow(item)
         currentQuestion = _currentQuestion
         _currentQuestionText.value = item.question
-
         val mapOfAnswers = mutableMapOf<String, Boolean>()
-        if (_answersPointsMap.value[_index.value] != true) {
+        if (_answeredQuestionsMap.value[_index.value] != true) {
             val answers = item.incorrect_answers + item.correct_answer
             answers.shuffled()
             answers.forEach {
                 mapOfAnswers[it] = it == item.correct_answer
             }
         }
+        else {
+            var text: String
+            val text2 =  "Correct answer: ${item.correct_answer}"
+            if(_answersPointsMap.value[questionIndex.value] == item.correct_answer) {
+                text = "You selected ${item.correct_answer} Correctly"
+                mapOfAnswers[text] = false
+            } else {
+                text = "You selected ${_answersPointsMap.value[questionIndex.value]} incorrectly"
+                mapOfAnswers[text] = false
+                mapOfAnswers[text2] = false
+            }
+
+        }
         _answersMap.value = mapOfAnswers
     }
 
     fun onAnswerSelected(selectedItem: String) {
-        _answersPointsMap.value[_index.value] = true
-
+        _answeredQuestionsMap.value[_index.value] = true
         if (currentQuestion.value.correct_answer == selectedItem) {
-            Timber.e("Awesome!! $selectedItem is correct")
+            _answersPointsMap.value[questionIndex.value] = selectedItem
+        } else {
+            _answersPointsMap.value[questionIndex.value] = selectedItem //"//You selected $selectedItem Incorrectly"
         }
+
         onNextClicked()
     }
 
-    fun resetGame() {
+    fun onCategorySelected(selectedItem: Int) {
+        Timber.d("Category ID: $selectedItem")
+        _currentCategory.value = selectedItem
+        resetGame()
+    }
+
+    private fun resetGame() {
         getQuestions()
         _index.value = 0
-        _answersPointsMap.value = mutableMapOf()
+        _answeredQuestionsMap.value = mutableMapOf()
     }
 
     fun getCategories() {
@@ -128,7 +142,7 @@ class MainActivityViewModel(private val networkClient: ApiRequest): ViewModel() 
     fun getQuestions() {
         viewModelScope.launch(Dispatchers.IO + postsExceptionHandler) {
             _state.value = State.Loading
-            val questionsResponse = networkClient.getQuestions(10, 18)
+            val questionsResponse = networkClient.getQuestions(10, currentCategory.value)
                 .awaitResponse()
             if (questionsResponse.isSuccessful) {
                 val data = questionsResponse.body()!!
