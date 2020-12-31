@@ -6,6 +6,7 @@ import androidx.compose.foundation.Icon
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -18,8 +19,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.platform.setContent
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.viewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -56,13 +61,12 @@ fun TriviaAppScaffold(
         override fun <T : ViewModel?> create(modelClass: Class<T>): T =
             MainActivityViewModel(networkClient) as T
     })
-    val listOfCategories = mainActivityViewModel.listOfCategories.collectAsState()
     val scaffoldState = rememberScaffoldState()
     Scaffold(
         scaffoldState = scaffoldState,
         backgroundColor = Color.White,
         topBar = {
-            TopAppBar(title = { centeredTitle() },
+            TopAppBar(title = { CenteredTitle() },
                 navigationIcon = {
                     Icon(
                         Icons.Default.Menu,
@@ -76,34 +80,41 @@ fun TriviaAppScaffold(
         },
         drawerShape = RoundedCornerShape(topRight = 10.dp, bottomRight = 10.dp),
         drawerContent = {
-            listOfCategories.value.forEach {
-                Text(text = it.name)
-            }
+            DisplayCategories(mainActivityViewModel, scaffoldState)
         },
         bodyContent = {
-                HomeScreen(mainActivityViewModel)
+            HomeScreen(mainActivityViewModel)
         }
     )
 }
 @Composable
-fun centeredTitle() {
-    Column(modifier = Modifier
-        .padding(8.dp)
-        .fillMaxWidth()
-        .wrapContentSize(Alignment.Center)
-        .clickable(onClick = { } )
-        .clip(shape = RoundedCornerShape(16.dp)),
+fun CenteredTitle() {
+    Text(text = "Trivia App",
+        modifier = Modifier.fillMaxWidth(.85f),
+        textAlign = TextAlign.Center,
+        style = TextStyle(fontSize = 30.sp,
+            fontWeight = FontWeight.Bold,
+            fontFamily = FontFamily.Cursive)
+    )
+}
+@ExperimentalCoroutinesApi
+@Composable
+fun DisplayCategories(mainActivityViewModel: MainActivityViewModel, scaffoldState: ScaffoldState) {
+    val listOfCategoriesState = mainActivityViewModel.listOfCategories.collectAsState()
+    LazyColumn(modifier = Modifier.padding(10.dp)
     ) {
-        Box(modifier = Modifier
-            .preferredSize(500.dp)
-            .border(width = 5.dp, color = Gray, shape = RoundedCornerShape(5.dp)),
-            contentAlignment = Alignment.Center) {
-            Text(
-                "Trivia App",
-                Modifier.padding(5.dp),
-                textAlign = TextAlign.Center,
-                style = typography.h6
-            )
-        }
+        items(items = listOfCategoriesState.value,
+            itemContent = { triviaCategory ->
+                Column(modifier = Modifier
+                    .padding(5.dp)
+                    .clickable(onClick = {
+                        scaffoldState.drawerState.close()
+                    with(mainActivityViewModel) { onCategorySelected(triviaCategory.id) }
+                })) {
+                    CustomText(answer = triviaCategory.name)
+                }
+            })
     }
 }
+
+
