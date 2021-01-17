@@ -94,13 +94,13 @@ class MainActivityViewModel(private val networkClient: ApiRequest): ViewModel() 
         }
         else {
             if(item.correct_answer == listOfAnsweredQuestions.value[_index.value].selectedAnswer) {
-                val text = "You selected ${item.correct_answer} correctly"
+                val text = "You selected ${ item.correct_answer } correctly"
                 mapOfAnswers[text] = false
             }
             else {
                 val text = "You selected ${ listOfAnsweredQuestions.value[_index.value].selectedAnswer } incorrectly"
                 mapOfAnswers[text] = false
-                val correctAnswer = "Correct answer: ${item.correct_answer}"
+                val correctAnswer = "Correct answer: ${ item.correct_answer }"
                 mapOfAnswers[correctAnswer] = false
             }
         }
@@ -160,13 +160,33 @@ class MainActivityViewModel(private val networkClient: ApiRequest): ViewModel() 
                 .awaitResponse()
             if (questionsResponse.isSuccessful) {
                 val data = questionsResponse.body()!!
-                _state.value = State.Success(data.results)
-                _listOfQuestions.value = data.results
+                _listOfQuestions.value = cleanQuestions(data.results)
                 setCurrentQuestion(listOfQuestions.value[questionIndex.value])
+                _state.value = State.Success(data.results)
             }
             else {
                 _state.value = State.Error("Something went wrong")
             }
         }
+    }
+
+    private fun cleanText(strData: String): String {
+        return strData.replace("&lt;", "<").replace("&gt;", ">")
+            .replace("&apos;", "'").replace("&quot;", "\"")
+            .replace("&amp;", "&").replace("&#039;", "\'")
+    }
+
+    private fun cleanQuestions(results: List<TriviaQuestion>): List<TriviaQuestion> {
+        val cleanQuestions = mutableListOf<TriviaQuestion>()
+        results.forEach { triviaQuestion ->
+            val listOfIncorrectAnswers = mutableListOf<String>()
+            triviaQuestion.incorrect_answers.forEach { answer ->
+                listOfIncorrectAnswers.add(cleanText(answer))
+            }
+            val newCleanQuestion = triviaQuestion.copy(question = cleanText(triviaQuestion.question),
+            incorrect_answers = listOfIncorrectAnswers, correct_answer = cleanText(triviaQuestion.correct_answer))
+            cleanQuestions.add(newCleanQuestion)
+        }
+        return cleanQuestions
     }
 }
