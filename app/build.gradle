@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
+    id 'com.diffplug.spotless'
 }
 
 android {
@@ -58,7 +59,7 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation "com.squareup.retrofit2:converter-moshi:2.9.0"
     implementation "androidx.fragment:fragment-ktx:1.2.5"
-    implementation "androidx.compose.runtime:runtime-livedata:1.0.0-alpha09"
+    implementation "androidx.compose.runtime:runtime-livedata:$compose_version"
     implementation "dev.chrisbanes.accompanist:accompanist-coil:0.4.0"
 
     // Timber

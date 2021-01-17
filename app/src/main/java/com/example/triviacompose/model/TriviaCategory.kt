@@ -1,4 +1,4 @@
-package com.example.triviacompose.api.response
+package com.example.triviacompose.model
 
 data class TriviaCategory(
     val id: Int,
