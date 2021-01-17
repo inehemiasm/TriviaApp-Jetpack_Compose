@@ -1,4 +1,4 @@
-package com.example.triviacompose.api.response
+package com.example.triviacompose.model
 
 data class TriviaQuestion(
     val category: String,
@@ -8,4 +8,3 @@ data class TriviaQuestion(
     val question: String,
     val type: String
 )
-
