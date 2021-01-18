@@ -1,5 +1,6 @@
 package com.example.triviacompose
 
+import androidx.core.text.HtmlCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.triviacompose.api.ApiRequest
@@ -171,9 +172,8 @@ class MainActivityViewModel(private val networkClient: ApiRequest): ViewModel() 
     }
 
     private fun cleanText(strData: String): String {
-        return strData.replace("&lt;", "<").replace("&gt;", ">")
-            .replace("&apos;", "'").replace("&quot;", "\"")
-            .replace("&amp;", "&").replace("&#039;", "\'")
+        return HtmlCompat.fromHtml(strData, HtmlCompat.FROM_HTML_MODE_LEGACY)
+            .toString()
     }
 
     private fun cleanQuestions(results: List<TriviaQuestion>): List<TriviaQuestion> {

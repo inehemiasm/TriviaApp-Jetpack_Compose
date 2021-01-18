@@ -1,11 +1,9 @@
 package com.example.triviacompose.ui.main
 
 import androidx.compose.foundation.Icon
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayout
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -42,9 +40,9 @@ fun TriviaAppScaffold(
     val scaffoldState = rememberScaffoldState()
     Scaffold(
         scaffoldState = scaffoldState,
-        backgroundColor = Color.White,
+        //backgroundColor = Color.White,
         topBar = {
-            TopAppBar(title = { CenteredTitle() },
+            TopAppBar(title = { CenteredTitle("Trivia App") },
                 navigationIcon = {
                     Icon(
                         Icons.Filled.Menu,
@@ -68,8 +66,8 @@ fun TriviaAppScaffold(
 }
 
 @Composable
-fun CenteredTitle() {
-    Text(text = "Trivia App",
+fun CenteredTitle(text: String) {
+    Text(text = text,
         modifier = Modifier.fillMaxWidth(.85f),
         textAlign = TextAlign.Center,
         style = TextStyle(fontSize = 30.sp,
@@ -82,6 +80,7 @@ fun CenteredTitle() {
 @Composable
 fun DisplayScafoldOptions(mainActivityViewModel: MainActivityViewModel, scaffoldState: ScaffoldState) {
     val listOfOptions = listOf("Select Category", "Reset Game", "Quit")
+    CenteredTitle("Menu")
     LazyColumn(modifier = Modifier.padding(10.dp)
     ) {
         items(items = listOfOptions,
@@ -91,7 +90,8 @@ fun DisplayScafoldOptions(mainActivityViewModel: MainActivityViewModel, scaffold
                     .clickable(onClick = {
                         scaffoldState.drawerState.close()
                         with(mainActivityViewModel) { onItemClicked(option) }
-                    })) {
+                    })
+                ) {
                     CustomText(answer = option)
                 }
             })

@@ -28,13 +28,9 @@ fun HomeScreen(
     val state = mainActivityViewModel.state.collectAsState()
 
     when (state.value) {
-        MainActivityViewModel.State.Idle -> {
-            mainActivityViewModel.getCategories()
-        }
-        MainActivityViewModel.State.Loading -> CenterLoadingIndicator()
-        is MainActivityViewModel.State.Success -> {
-            GameScreen(mainActivityViewModel)
-        }
+        is MainActivityViewModel.State.Idle -> mainActivityViewModel.getCategories()
+        is MainActivityViewModel.State.Loading -> CenterLoadingIndicator()
+        is MainActivityViewModel.State.Success -> GameScreen(mainActivityViewModel)
         is MainActivityViewModel.State.Error -> ErrorView(retryAction = { mainActivityViewModel.getQuestions() })
         is MainActivityViewModel.State.Complete -> DisplayAnsweredQuestions(mainActivityViewModel)
         is MainActivityViewModel.State.SelectCategory -> DisplayCategories(mainActivityViewModel)
@@ -68,7 +64,7 @@ private fun decoupledConstraints(margin: Dp): ConstraintSet {
         val questionCard = createRefFor("QuestionCard")
         val showAnswers = createRefFor("ShowAnswers")
         constrain(showAnswers) {
-            top.linkTo(questionCard.bottom, margin = 0.dp)
+            top.linkTo(questionCard.bottom, margin = 2.dp)
         }
     }
 }

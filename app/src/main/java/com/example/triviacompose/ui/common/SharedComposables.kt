@@ -43,7 +43,7 @@ fun CustomText(answer: String) {
                             shape = RoundedCornerShape(5.dp))
                     .padding(10.dp),
             overflow = TextOverflow.Ellipsis,
-            maxLines = 4,
+            //maxLines = 4,
             style = TextStyle(fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colors.onBackground),
             fontSize = 24.sp
