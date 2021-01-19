@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -29,7 +30,7 @@ fun DisplayAnsweredQuestions(mainActivityViewModel: MainActivityViewModel) {
         val resetGame = "Reset Game"
         LazyColumn(modifier = Modifier.padding(10.dp)
         ) {
-            items(items = listOfQuestionsState.value + resetGame,
+            items(items = listOfQuestionsState.value.values + resetGame,
                     itemContent = { item ->
                         if (item is String) {
                             Column(modifier = Modifier.clickable(onClick = { mainActivityViewModel.onItemClicked(item) })) {
@@ -43,14 +44,17 @@ fun DisplayAnsweredQuestions(mainActivityViewModel: MainActivityViewModel) {
                                     .padding(10.dp)) {
                                 CustomText(answer = item.question)
                                 if (correctAnswer == selectedAnswer) {
-                                    Text(text = correctAnswer, style = TextStyle(fontWeight = FontWeight.Bold, color = Color.Green), fontSize = 18.sp, modifier = Modifier.padding(5.dp)
+                                    Text(text = correctAnswer, style = TextStyle(
+                                        fontWeight = FontWeight.Bold, color = MaterialTheme.colors.primary), fontSize = 18.sp, modifier = Modifier.padding(5.dp)
                                     )
                                 } else {
                                     val selected = "Selected: $selectedAnswer"
                                     correctAnswer = "Expected: $correctAnswer"
-                                    Text(text = selected, style = TextStyle(fontWeight = FontWeight.Bold, color = Color.Red), fontSize = 18.sp, modifier = Modifier.padding(5.dp)
+                                    Text(text = selected, style = TextStyle(
+                                        fontWeight = FontWeight.Bold, color = Color.Red), fontSize = 18.sp, modifier = Modifier.padding(5.dp)
                                     )
-                                    Text(text = correctAnswer, style = TextStyle(fontWeight = FontWeight.Bold, color = Color.Green), fontSize = 18.sp, modifier = Modifier.padding(5.dp)
+                                    Text(text = correctAnswer, style = TextStyle(
+                                        fontWeight = FontWeight.Bold, color = MaterialTheme.colors.primary), fontSize = 18.sp, modifier = Modifier.padding(5.dp)
                                     )
                                 }
                             }

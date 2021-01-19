@@ -1,17 +1,26 @@
 package com.example.triviacompose.ui.main
 
+import androidx.compose.foundation.layout.ExperimentalLayout
+import androidx.compose.material.TopAppBar
+import androidx.compose.material.Text
+import androidx.compose.material.rememberScaffoldState
+import androidx.compose.runtime.Composable
 import androidx.compose.foundation.Icon
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.Divider
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
+import androidx.compose.material.ScaffoldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -40,9 +49,9 @@ fun TriviaAppScaffold(
     val scaffoldState = rememberScaffoldState()
     Scaffold(
         scaffoldState = scaffoldState,
-        //backgroundColor = Color.White,
         topBar = {
-            TopAppBar(title = { CenteredTitle("Trivia App") },
+            TopAppBar(title = { Box(modifier = Modifier.fillMaxWidth(.85f)) {
+                CenteredTitle ("Trivia App")} },
                 navigationIcon = {
                     Icon(
                         Icons.Filled.Menu,
@@ -68,7 +77,7 @@ fun TriviaAppScaffold(
 @Composable
 fun CenteredTitle(text: String) {
     Text(text = text,
-        modifier = Modifier.fillMaxWidth(.85f),
+        modifier = Modifier.fillMaxWidth(),
         textAlign = TextAlign.Center,
         style = TextStyle(fontSize = 30.sp,
             fontWeight = FontWeight.Bold,
@@ -79,8 +88,11 @@ fun CenteredTitle(text: String) {
 @ExperimentalCoroutinesApi
 @Composable
 fun DisplayScafoldOptions(mainActivityViewModel: MainActivityViewModel, scaffoldState: ScaffoldState) {
-    val listOfOptions = listOf("Select Category", "Reset Game", "Quit")
+    val listOfOptions = listOf("Select Category", "Reset Game", "Settings", "Quit")
     CenteredTitle("Menu")
+    Divider(color = MaterialTheme.colors.onBackground, thickness = 5.dp,
+    modifier = Modifier.padding(10.dp)
+        .shadow(5.dp))
     LazyColumn(modifier = Modifier.padding(10.dp)
     ) {
         items(items = listOfOptions,

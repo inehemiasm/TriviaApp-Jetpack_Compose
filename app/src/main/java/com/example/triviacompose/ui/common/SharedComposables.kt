@@ -36,16 +36,15 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @Composable
 fun CustomText(answer: String) {
     Text(
-            text = answer,
-            modifier = Modifier
-                    .shadow(5.dp)
-                    .background(color = MaterialTheme.colors.background,
-                            shape = RoundedCornerShape(5.dp))
-                    .padding(10.dp),
-            overflow = TextOverflow.Ellipsis,
-            //maxLines = 4,
-            style = TextStyle(fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colors.onBackground),
+        text = answer,
+        modifier = Modifier
+            .shadow(5.dp)
+            .background(color = MaterialTheme.colors.onBackground,
+                shape = RoundedCornerShape(5.dp))
+            .padding(10.dp),
+        overflow = TextOverflow.Ellipsis,
+        style = TextStyle(fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colors.background),
             fontSize = 24.sp
     )
 }

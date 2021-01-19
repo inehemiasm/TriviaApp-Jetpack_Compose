@@ -9,12 +9,12 @@ import androidx.compose.ui.layout.WithConstraints
 import androidx.compose.ui.platform.AmbientDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.example.triviacompose.ui.answer.ShowAnswersList
 import com.example.triviacompose.ui.category.DisplayCategories
 import com.example.triviacompose.ui.common.CenterLoadingIndicator
 import com.example.triviacompose.ui.common.onNextClicked
 import com.example.triviacompose.ui.common.onPreviousClicked
 import com.example.triviacompose.ui.error.ErrorView
+import com.example.triviacompose.ui.question.TimerView
 import com.example.triviacompose.ui.question.questionCard
 import com.example.triviacompose.ui.results.DisplayAnsweredQuestions
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -52,7 +52,7 @@ fun GameScreen(
         }
         ConstraintLayout(constraints) {
             questionCard(mainActivityViewModel = mainActivityViewModel)
-            ShowAnswersList(mainActivityViewModel = mainActivityViewModel)
+            TimerView(mainActivityViewModel = mainActivityViewModel)
             onNextClicked(viewModel = mainActivityViewModel)
             onPreviousClicked(viewModel = mainActivityViewModel)
         }
@@ -63,9 +63,12 @@ private fun decoupledConstraints(margin: Dp): ConstraintSet {
     return ConstraintSet {
         val questionCard = createRefFor("QuestionCard")
         val showAnswers = createRefFor("ShowAnswers")
-        constrain(showAnswers) {
+        val timerView = createRefFor("timer")
+        constrain(timerView) {
             top.linkTo(questionCard.bottom, margin = 2.dp)
+        }
+        constrain(showAnswers) {
+            top.linkTo(timerView.bottom, margin = 2.dp)
         }
     }
 }
-

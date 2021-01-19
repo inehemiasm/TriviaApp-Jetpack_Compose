@@ -2,7 +2,10 @@ package com.example.triviacompose.ui.answer
 
 import com.example.triviacompose.ui.common.CustomText
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.ExperimentalLayout
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
@@ -15,6 +18,8 @@ import androidx.compose.ui.unit.dp
 import kotlin.math.max
 import com.example.triviacompose.MainActivityViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import androidx.compose.foundation.layout.Column
+
 
 @ExperimentalLayout
 @Composable

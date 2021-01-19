@@ -10,9 +10,6 @@ interface ApiRequest {
     @GET("/api_category.php")
     fun getCategory(): Call<Categories>
 
-    @GET("/api_category.php")
-    fun getCategoryQuestion(): Call<Categories>
-
     @GET("/api.php")
     fun getQuestions(
         @Query("amount") amount: Int,
